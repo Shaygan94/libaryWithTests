@@ -29,17 +29,18 @@ public class BookServiceIT extends BaseIntegrationTest {
         //Given - opprett testdata
         var location = locationService.save(new Location("Address One", "Room One", "Shelf One"));
         var author = authorService.save(new Author("First", "Last", "<EMAIL>", null));
+
         var bookDto = new BookDto(null, "Title One", location.getId(), List.of(author.getId()));
 
         //When - lagre bok og hent den igjen
         var savedBook = bookService.save(bookDto);
-        var retrievedBook = bookService.getBook(savedBook.getId());
+
 
         //Then - verifiser at alt er lagret korrekt
-        assertThat(retrievedBook).isNotNull();
-        assertThat(retrievedBook.getTitle()).isEqualTo("Title One");
-        assertThat(retrievedBook.getLocation().getAddress()).isEqualTo("Address One");
-        assertThat(retrievedBook.getAuthors().getFirst().getFirstName()).isEqualTo("First");
-        assertThat(retrievedBook.getAuthors().getFirst().getLastName()).isEqualTo("Last");
+        assertThat(savedBook).isNotNull();
+        assertThat(savedBook.getTitle()).isEqualTo("Title One");
+        assertThat(savedBook.getLocation().getAddress()).isEqualTo("Address One");
+        assertThat(savedBook.getAuthors().getFirst().getFirstName()).isEqualTo("First");
+        assertThat(savedBook.getAuthors().getFirst().getLastName()).isEqualTo("Last");
     }
 }

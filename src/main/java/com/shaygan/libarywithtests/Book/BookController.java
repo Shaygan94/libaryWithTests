@@ -39,7 +39,7 @@ public class BookController {
     @GetMapping("/init")
     public ResponseEntity<String> init() {
         testData.createTestData();
-        return ResponseEntity.ok("Books with faker initialized. ");
+        return ResponseEntity.ok("Books with faker initialized.");
     }
 
 
