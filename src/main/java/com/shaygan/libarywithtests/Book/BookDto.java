@@ -7,5 +7,4 @@ public record BookDto(
         String title,
         Long locationId,
         List<Long> authorIds
-) {
-}
+) {}

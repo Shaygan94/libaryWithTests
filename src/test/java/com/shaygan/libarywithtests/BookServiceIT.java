@@ -6,13 +6,17 @@ import com.shaygan.libarywithtests.Book.BookDto;
 import com.shaygan.libarywithtests.Book.BookService;
 import com.shaygan.libarywithtests.Location.Location;
 import com.shaygan.libarywithtests.Location.LocationService;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 @SpringBootTest
+@Transactional  //
 public class BookServiceIT extends BaseIntegrationTest {
 
     @Autowired private BookService bookService;
@@ -20,12 +24,22 @@ public class BookServiceIT extends BaseIntegrationTest {
     @Autowired private LocationService locationService;
 
     @Test
-    void testOfContainer () {
-        var newLocation = locationService.save(new Location("Place", "Room", "Shelf"));
-        var newAuthor = new Author("John", "Doe", "ja", null);
-        authorService.save(newAuthor);
-        var newBook = new BookDto(null, "Book Title", newLocation.getId(), List.of(newAuthor.getId()));
-        var result = bookService.save(newBook);
-        assert result.getAuthors().size() == 1;
+   void shouldSaveAndRetrieveBookWithAuthorsAndLocation(){
+
+        //Given - opprett testdata
+        var location = locationService.save(new Location("Address One", "Room One", "Shelf One"));
+        var author = authorService.save(new Author("First", "Last", "<EMAIL>", null));
+        var bookDto = new BookDto(null, "Title One", location.getId(), List.of(author.getId()));
+
+        //When - lagre bok og hent den igjen
+        var savedBook = bookService.save(bookDto);
+        var retrievedBook = bookService.getBook(savedBook.getId());
+
+        //Then - verifiser at alt er lagret korrekt
+        assertThat(retrievedBook).isNotNull();
+        assertThat(retrievedBook.getTitle()).isEqualTo("Title One");
+        assertThat(retrievedBook.getLocation().getAddress()).isEqualTo("Address One");
+        assertThat(retrievedBook.getAuthors().getFirst().getFirstName()).isEqualTo("First");
+        assertThat(retrievedBook.getAuthors().getFirst().getLastName()).isEqualTo("Last");
     }
 }
